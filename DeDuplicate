@@ -1,0 +1,45 @@
+(function executeRule(current, previous /*null when async*/) {
+
+	// Add your code here
+	
+	
+var tableID = current.sys_id;
+          var dupRecord ;                      
+     var gaDupCheck1 = new GlideAggregate('sys_attachment'); 
+     gaDupCheck1.addQuery('table_sys_id',tableID);
+     gaDupCheck1.addAggregate('COUNT', 'file_name'); 
+     gaDupCheck1.groupBy('file_name');
+    //gaDupCheck1.orderBy('created_at')
+     gaDupCheck1.addHaving('COUNT', '>', 1); 
+     gaDupCheck1.query(); 
+     while(gaDupCheck1.next()) { 
+           dupRecord = gaDupCheck1.file_name;  
+		 //deleteRec();
+      //gs.addInfoMessage(dupRecord);
+       
+       var grDeleteAttachment = new GlideRecord('sys_attachment');
+			grDeleteAttachment.addQuery('table_sys_id',tableID);
+			grDeleteAttachment.addQuery('file_name',dupRecord);
+       grDeleteAttachment.query();
+			var count =grDeleteAttachment.getRowCount();
+       //gs.addInfoMessage(count);
+       while(grDeleteAttachment.next()){
+			 if(count > 1){
+			
+		grDeleteAttachment.deleteRecord();
+         //gs.addInfoMessage('DELETING...');
+				 count--;
+			 } 
+     //gs.addInfoMessage('Attachment Record Deleted');
+  }
+     }
+
+
+  
+
+  
+  
+
+
+
+})(current, previous);
